@@ -24,68 +24,97 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useMemo, useEffect } = React;
-
-        // ⚠️ 請將下方的網址替換成您在 Apps Script 部署後取得的 "Web App URL"
-        const API_URL = "https://script.google.com/macros/s/AKfycbyabwI9ieUtatUi5N8a5X6PdTy8zjH17zfzHEyGc9rylzIHF2qh8XmA4-UFqV1_rL0YvA/exec"; 
+        const { useState, useMemo } = React;
 
         const App = () => {
+            // 完整正確名單 (共 43 位)
+            const rawData = [
+                { id: "U09217127", name: "陳冠維", score: 49.68888889 },
+                { id: "U11217012", name: "唐光駿", score: 42.55555556 },
+                { id: "U11217017", name: "陳德民", score: 48.61111111 },
+                { id: "U11217026", name: "劉曉蕾", score: 34.33333333 },
+                { id: "U11217028", name: "賴榆芳", score: 59.76666667 },
+                { id: "U11217031", name: "簡世軒", score: 43.92222222 },
+                { id: "U11217032", name: "簡嘉佑", score: 43.91111111 },
+                { id: "U11217105", name: "李玄善", score: 71.5 },
+                { id: "U11217115", name: "翁維承", score: 63.15555556 },
+                { id: "U11217118", name: "曹皓揚", score: 14.12222222 },
+                { id: "U11217124", name: "陳祈安", score: 50.78888889 },
+                { id: "U11217131", name: "詹士賢", score: 69.56666667 },
+                { id: "U13117226", name: "彭智信", score: 67.37777778 },
+                { id: "U13217101", name: "王楷元", score: 25.38888889 },
+                { id: "U13217102", name: "甘世恩", score: 52.99444444 },
+                { id: "U13217104", name: "朱貫榮", score: 49.24444444 },
+                { id: "U13217105", name: "杜以琳", score: 65.67777778 },
+                { id: "U13217107", name: "沈姿伃", score: 69.98333333 },
+                { id: "U13217109", name: "林劭丞", score: 50.98888889 },
+                { id: "U13217110", name: "林昌奎", score: 52.67777778 },
+                { id: "U13217111", name: "林峪安", score: 72.98333333 },
+                { id: "U13217115", name: "張哲銘", score: 40.69444444 },
+                { id: "U13217117", name: "張華芝", score: 72.57777778 },
+                { id: "U13217118", name: "許友倫", score: 12.9 },
+                { id: "U13217119", name: "許衣寧", score: 51.74444444 },
+                { id: "U13217121", name: "陳全", score: 48.1 },
+                { id: "U13217122", name: "陳思叡", score: 46.82777778 },
+                { id: "U13217123", name: "陳意蓉", score: 78.43333333 },
+                { id: "U13217126", name: "黃冠睿", score: 72.1 },
+                { id: "U13217127", name: "黃宥銘", score: 73.7 },
+                { id: "U13217128", name: "黃柏翔", score: 81.2 },
+                { id: "U13217129", name: "黃致豪", score: 65.68888889 },
+                { id: "U13217131", name: "楊俊輝", score: 37.9 },
+                { id: "U13217132", name: "葉倢如", score: 72.5 },
+                { id: "U13217133", name: "廖子瑩", score: 63.73333333 },
+                { id: "U13217135", name: "劉德威", score: 61.78888889 },
+                { id: "U13217136", name: "潘紀妍", score: 83.40555556 },
+                { id: "U13217137", name: "蔡如姸", score: 84.02777778 },
+                { id: "U13217138", name: "蔡依曉", score: 80.3 },
+                { id: "U13217140", name: "謝鎮辰", score: 29.8 },
+                { id: "U13217931", name: "林鈺夫", score: 31.15555556 },
+                { id: "U13217932", name: "羅珮琪", score: 93.27777778 },
+                { id: "U13217933", name: "曾奕誠", score: 53.6 }
+            ];
+
             const [query, setQuery] = useState('');
             const [searchResult, setSearchResult] = useState(null);
-            const [loading, setLoading] = useState(false);
-            const [stats, setStats] = useState({ green: 0, yellow: 0, red: 0, total: 0 });
 
-            // 燈號判斷邏輯 (前端僅用於顯示)
             const getStatus = (score) => {
                 const roundedScore = Math.round(score);
+                
                 if (roundedScore < 50) return { 
-                    color: 'red', label: '紅燈', desc: '不及格', bg: 'bg-red-500' 
+                    color: 'red', 
+                    label: '紅燈', 
+                    desc: '不及格', 
+                    bg: 'bg-red-500', 
+                    glow: 'shadow-red-500/50'
                 };
                 if (roundedScore >= 65) return { 
-                    color: 'green', label: '綠燈', desc: '及格', bg: 'bg-green-500' 
+                    color: 'green', 
+                    label: '綠燈', 
+                    desc: '及格', 
+                    bg: 'bg-green-500', 
+                    glow: 'shadow-green-500/50'
                 };
                 return { 
-                    color: 'yellow', label: '黃燈', desc: '不及格 (有機會補救)', bg: 'bg-yellow-500' 
+                    color: 'yellow', 
+                    label: '黃燈', 
+                    desc: '不及格 (有機會補救)', 
+                    bg: 'bg-yellow-500', 
+                    glow: 'shadow-yellow-500/50'
                 };
             };
 
-            // 畫面載入時，先去抓全班的燈號分佈 (不抓名單)
-            useEffect(() => {
-                if (API_URL === "YOUR_GOOGLE_SCRIPT_URL") {
-                    console.warn("請記得更換 API URL");
-                    return;
-                }
-                fetch(`${API_URL}?type=stats`)
-                    .then(res => res.json())
-                    .then(data => {
-                        const total = data.green + data.yellow + data.red;
-                        setStats({ ...data, total });
-                    })
-                    .catch(err => console.error("無法取得統計資料", err));
+            const stats = useMemo(() => {
+                const counts = { red: 0, yellow: 0, green: 0 };
+                rawData.forEach(s => counts[getStatus(s.score).color]++);
+                return counts;
             }, []);
 
             const handleSearch = () => {
                 if (!query.trim()) return;
-                setLoading(true);
-                setSearchResult(null);
-
-                // 呼叫後端 API 查詢
-                fetch(`${API_URL}?q=${encodeURIComponent(query.trim())}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            setSearchResult(data.data);
-                        } else {
-                            setSearchResult('none');
-                        }
-                    })
-                    .catch(err => {
-                        alert("查詢發生錯誤，請稍後再試");
-                        console.error(err);
-                    })
-                    .finally(() => {
-                        setLoading(false);
-                    });
+                const result = rawData.find(s => 
+                    s.name === query.trim() || s.id.toLowerCase() === query.trim().toLowerCase()
+                );
+                setSearchResult(result || 'none');
             };
 
             return (
@@ -99,26 +128,34 @@
                             <p className="text-slate-500 text-sm mt-4">請輸入學號 (大寫U開頭) 或姓名查詢個人狀態燈號</p>
                         </header>
 
-                        {/* Summary Stats Overview (動態載入) */}
-                        {stats.total > 0 && (
-                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-10">
-                                <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex justify-between">
-                                    <span>班級燈號分佈概況 (共 {stats.total} 人)</span>
-                                </h2>
-                                <div className="flex h-5 w-full rounded-full overflow-hidden bg-slate-100 mb-6 border border-slate-50">
-                                    <div style={{ width: `${(stats.green / stats.total) * 100}%` }} className="bg-green-500"></div>
-                                    <div style={{ width: `${(stats.yellow / stats.total) * 100}%` }} className="bg-yellow-500"></div>
-                                    <div style={{ width: `${(stats.red / stats.total) * 100}%` }} className="bg-red-500"></div>
+                        {/* Summary Stats Overview */}
+                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-10">
+                            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex justify-between">
+                                <span>班級燈號分佈概況 (共 {rawData.length} 人)</span>
+                                <span className="text-xs">僅呈現燈號類別</span>
+                            </h2>
+                            <div className="flex h-5 w-full rounded-full overflow-hidden bg-slate-100 mb-6 border border-slate-50">
+                                <div style={{ width: `${(stats.green / rawData.length) * 100}%` }} className="bg-green-500 shadow-inner transition-all duration-1000"></div>
+                                <div style={{ width: `${(stats.yellow / rawData.length) * 100}%` }} className="bg-yellow-500 shadow-inner transition-all duration-1000"></div>
+                                <div style={{ width: `${(stats.red / rawData.length) * 100}%` }} className="bg-red-500 shadow-inner transition-all duration-1000"></div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 text-center">
+                                <div className="p-2">
+                                    <div className="text-2xl font-black text-green-500">{stats.green}</div>
+                                    <div className="text-xs text-slate-500 font-bold">及格 (綠燈)</div>
                                 </div>
-                                <div className="grid grid-cols-3 gap-4 text-center">
-                                    <div className="p-2"><div className="text-2xl font-black text-green-500">{stats.green}</div><div className="text-xs text-slate-500 font-bold">及格</div></div>
-                                    <div className="p-2 border-x border-slate-100"><div className="text-2xl font-black text-yellow-500">{stats.yellow}</div><div className="text-xs text-slate-500 font-bold">待補救</div></div>
-                                    <div className="p-2"><div className="text-2xl font-black text-red-500">{stats.red}</div><div className="text-xs text-slate-500 font-bold">不及格</div></div>
+                                <div className="p-2 border-x border-slate-100">
+                                    <div className="text-2xl font-black text-yellow-500">{stats.yellow}</div>
+                                    <div className="text-xs text-slate-500 font-bold">待補救 (黃燈)</div>
+                                </div>
+                                <div className="p-2">
+                                    <div className="text-2xl font-black text-red-500">{stats.red}</div>
+                                    <div className="text-xs text-slate-500 font-bold">不及格 (紅燈)</div>
                                 </div>
                             </div>
-                        )}
+                        </div>
 
-                        {/* Search Interaction */}
+                        {/* Search Interaction Section */}
                         <div className="flex flex-col items-center gap-6 mb-12">
                             <div className="flex w-full max-w-md shadow-2xl rounded-2xl overflow-hidden border-2 border-white focus-within:ring-4 focus-within:ring-blue-100 transition-all">
                                 <input
@@ -128,58 +165,80 @@
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                                    disabled={loading}
                                 />
                                 <button 
                                     onClick={handleSearch}
-                                    disabled={loading}
-                                    className={`bg-blue-600 text-white px-8 py-4 font-bold transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700 active:scale-95'}`}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 font-bold transition-colors active:scale-95"
                                 >
-                                    {loading ? '...' : '查詢'}
+                                    查詢
                                 </button>
                             </div>
                         </div>
 
                         {/* Result Display Area */}
                         <div className="min-h-[400px] flex items-center justify-center">
-                            {searchResult === 'none' && !loading && (
+                            {searchResult === 'none' && (
                                 <div className="text-center animate-bounce text-slate-400">
                                     <div className="text-5xl mb-4">🔍</div>
                                     <p className="text-lg font-bold">找不到資料，請確認輸入是否正確</p>
+                                    <p className="text-xs mt-2">提示：學號請包含大寫字母 U</p>
                                 </div>
                             )}
 
-                            {searchResult && searchResult !== 'none' && !loading && (() => {
+                            {searchResult && searchResult !== 'none' && (() => {
                                 const status = getStatus(searchResult.score);
                                 return (
                                     <div className="bg-white w-full max-w-md rounded-[40px] shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row animate-in fade-in zoom-in duration-300">
+                                        {/* Visual Traffic Light Component */}
                                         <div className="bg-slate-900 p-8 flex flex-col gap-6 items-center justify-center">
-                                            <div className={`relative w-16 h-16 rounded-full border-4 border-slate-800 flex items-center justify-center ${status.color === 'red' ? 'bg-red-500 shadow-[0_0_35px_rgba(239,68,68,1)]' : 'bg-slate-800 opacity-10'}`}></div>
-                                            <div className={`relative w-16 h-16 rounded-full border-4 border-slate-800 flex items-center justify-center ${status.color === 'yellow' ? 'bg-yellow-500 shadow-[0_0_35px_rgba(234,179,8,1)]' : 'bg-slate-800 opacity-10'}`}></div>
-                                            <div className={`relative w-16 h-16 rounded-full border-4 border-slate-800 flex items-center justify-center ${status.color === 'green' ? 'bg-green-500 shadow-[0_0_35px_rgba(34,197,94,1)]' : 'bg-slate-800 opacity-10'}`}></div>
+                                            <div className={`relative w-16 h-16 rounded-full border-4 border-slate-800 flex items-center justify-center transition-all duration-700 ${status.color === 'red' ? 'bg-red-500 shadow-[0_0_35px_rgba(239,68,68,1)]' : 'bg-slate-800 opacity-10'}`}>
+                                                {status.color === 'red' && <div className="w-16 h-16 rounded-full bg-red-500 animate-custom-ping absolute"></div>}
+                                            </div>
+                                            <div className={`relative w-16 h-16 rounded-full border-4 border-slate-800 flex items-center justify-center transition-all duration-700 ${status.color === 'yellow' ? 'bg-yellow-500 shadow-[0_0_35px_rgba(234,179,8,1)]' : 'bg-slate-800 opacity-10'}`}>
+                                                {status.color === 'yellow' && <div className="w-16 h-16 rounded-full bg-yellow-500 animate-custom-ping absolute"></div>}
+                                            </div>
+                                            <div className={`relative w-16 h-16 rounded-full border-4 border-slate-800 flex items-center justify-center transition-all duration-700 ${status.color === 'green' ? 'bg-green-500 shadow-[0_0_35px_rgba(34,197,94,1)]' : 'bg-slate-800 opacity-10'}`}>
+                                                {status.color === 'green' && <div className="w-16 h-16 rounded-full bg-green-500 animate-custom-ping absolute"></div>}
+                                            </div>
                                         </div>
 
+                                        {/* Student Info Area */}
                                         <div className="p-10 flex-grow flex flex-col justify-center bg-white text-center md:text-left">
+                                            <span className="text-blue-500 text-xs font-black uppercase tracking-widest mb-2">Individual Report</span>
                                             <h3 className="text-4xl font-black text-slate-800 mb-1">{searchResult.name}</h3>
                                             <p className="text-slate-400 font-mono text-sm mb-8 tracking-tighter italic">{searchResult.id}</p>
                                             
                                             <div className="border-t border-slate-100 pt-8">
+                                                <p className="text-xs text-slate-400 font-bold mb-2 uppercase">Study Progress</p>
                                                 <p className={`text-3xl font-black leading-tight mb-6 ${
                                                     status.color === 'red' ? 'text-red-500' :
                                                     status.color === 'green' ? 'text-green-500' : 'text-yellow-600'
                                                 }`}>
                                                     {status.desc}
                                                 </p>
-                                                <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                                                    {status.color === 'yellow' ? "成績尚待補救，請盡速聯繫教授。" : 
-                                                     status.color === 'red' ? "成績不及格，請注意相關通知。" : 
-                                                     "成績表現優良，請繼續保持。"}
-                                                </p>
+                                                
+                                                <div className="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                                    <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                                                        {status.color === 'yellow' ? (
+                                                            "您的學習狀態目前為黃燈，代表成績尚待補救。請務必盡速與王教授聯繫，確認後續補救教學事宜。"
+                                                        ) : status.color === 'red' ? (
+                                                            "您的學習狀態目前為紅燈，代表成績不及格。請密切注意課程通知並尋求助教或教授協助。"
+                                                        ) : (
+                                                            "恭喜！您的學習狀態為綠燈，代表本學期成績表現優良，請繼續保持。"
+                                                        )}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 );
                             })()}
+
+                            {!searchResult && (
+                                <div className="text-center text-slate-300 italic">
+                                    <p className="text-lg tracking-[0.2em] uppercase font-light">Waiting for student ID...</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
