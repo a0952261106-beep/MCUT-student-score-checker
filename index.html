@@ -39,30 +39,33 @@
 
             // --- 修改處：拆分主標題與括號內的副標題 ---
             const getStatus = (score) => {
-                const roundedScore = Math.round(score);
-                
-                if (roundedScore < 50) return { 
+                const scoreValue = parseFloat(score);
+
+                if (scoreValue < 50) return { 
                     color: 'red', 
                     label: '紅燈', 
                     desc: '成績未達標', 
-                    sub: '', // 紅燈無副標題
+                    sub: '',
                     bg: 'bg-red-500' 
                 };
-                if (roundedScore >= 60) return { 
+            
+                if (scoreValue >= 60) return { 
                     color: 'green', 
                     label: '綠燈', 
                     desc: '恭喜通過', 
-                    sub: '', // 綠燈無副標題
+                    sub: '',
                     bg: 'bg-green-500' 
                 };
+            
                 return { 
                     color: 'yellow', 
                     label: '黃燈', 
-                    desc: '待加強',        // 主標題
-                    sub: '(需申請補救)',   // 括號文字移到這裡，將會換行顯示
+                    desc: '待加強',
+                    sub: '(需申請補救)',
                     bg: 'bg-yellow-500' 
                 };
             };
+          
 
             // 畫面載入時取得統計
             useEffect(() => {
