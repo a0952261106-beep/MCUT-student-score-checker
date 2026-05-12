@@ -39,7 +39,7 @@
 
             // --- 修改處：拆分主標題與括號內的副標題 ---
             const getStatus = (score) => {
-                const scoreValue = parseFloat(score);
+               const scoreValue = Math.round(parseFloat(score));
 
                 if (scoreValue < 50) return { 
                     color: 'red', 
