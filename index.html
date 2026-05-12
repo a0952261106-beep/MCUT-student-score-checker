@@ -41,7 +41,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Google Apps Script API 網址
         const API_URL = "https://script.google.com/macros/s/AKfycbyWgFR3wLz6hHPDJTtLSSzvwgFRrriiuzcCOwBsdc-HJvzP28PNashl3_S59fTAGZpqjQ/exec";
 
         const App = () => {
@@ -55,13 +54,10 @@
                 total: 0
             });
 
-            // ==============================
-            // 燈號判斷規則
-            // 四捨五入後：
-            // 60 分以上：綠燈
-            // 50～59 分：黃燈
-            // 低於 50 分：紅燈
-            // ==============================
+            // 燈號判斷規則：
+            // 四捨五入後 60 分以上：綠燈
+            // 四捨五入後 50～59 分：黃燈
+            // 四捨五入後低於 50 分：紅燈
             const getStatus = (score) => {
                 const scoreValue = Math.round(parseFloat(score));
 
@@ -94,14 +90,13 @@
                 };
             };
 
-            // ==============================
             // 畫面載入時取得班級統計
-            // ==============================
             useEffect(() => {
                 fetch(`${API_URL}?type=stats`)
                     .then(res => res.json())
                     .then(data => {
                         const total = data.green + data.yellow + data.red;
+
                         setStats({
                             green: data.green,
                             yellow: data.yellow,
@@ -114,9 +109,7 @@
                     });
             }, []);
 
-            // ==============================
             // 查詢個別學生
-            // ==============================
             const handleSearch = () => {
                 if (!query.trim()) return;
 
@@ -147,7 +140,6 @@
                 <div className="min-h-screen p-4 md:p-8 flex flex-col items-center">
                     <div className="max-w-4xl w-full">
 
-                        {/* 標題區 */}
                         <header className="text-center mb-10">
                             <h1 className="text-4xl font-bold text-slate-800 mb-3 tracking-tight">
                                 11402 統計學(一)學期成績查詢
@@ -162,7 +154,6 @@
                             </p>
                         </header>
 
-                        {/* 統計圖表 */}
                         {stats.total > 0 && (
                             <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-10">
                                 <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex justify-between">
@@ -217,7 +208,6 @@
                             </div>
                         )}
 
-                        {/* 搜尋框 */}
                         <div className="flex flex-col items-center gap-6 mb-12">
                             <div className="flex w-full max-w-md shadow-2xl rounded-2xl overflow-hidden border-2 border-white focus-within:ring-4 focus-within:ring-blue-100 transition-all">
                                 <input
@@ -244,7 +234,6 @@
                             </div>
                         </div>
 
-                        {/* 結果顯示區 */}
                         <div className="min-h-[400px] flex items-center justify-center">
 
                             {searchResult === 'none' && !loading && (
@@ -262,7 +251,6 @@
                                 return (
                                     <div className="bg-white w-full max-w-md rounded-[40px] shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row animate-in fade-in zoom-in duration-300">
 
-                                        {/* 左側燈號 */}
                                         <div className="bg-slate-900 p-8 flex flex-col gap-6 items-center justify-center">
 
                                             <div className={`relative w-16 h-16 rounded-full border-4 border-slate-800 flex items-center justify-center transition-all duration-700 ${
@@ -296,7 +284,6 @@
                                             </div>
                                         </div>
 
-                                        {/* 右側學生資訊 */}
                                         <div className="p-10 flex-grow flex flex-col justify-center bg-white text-center md:text-left">
                                             <span className="text-blue-500 text-xs font-black uppercase tracking-widest mb-2">
                                                 Individual Report
@@ -310,7 +297,6 @@
                                                 {searchResult.id}
                                             </p>
 
-                                            {/* 顯示系統實際讀取分數 */}
                                             <p className="text-slate-500 text-sm font-bold mb-8">
                                                 系統讀取成績：{searchResult.score}
 
